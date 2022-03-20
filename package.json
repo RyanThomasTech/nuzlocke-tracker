@@ -1,0 +1,27 @@
+{
+  "name": "nuzlocke-tracker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "prestart": "babel ./src -d build",
+    "start": "node ./build/bin/www",
+    "startdev": "nodemon --verbose --exec babel-node ./src/bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.8",
+    "@babel/node": "^7.16.8",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/register": "^7.17.7",
+    "@babel/runtime": "^7.17.8",
+    "nodemon": "^2.0.15"
+  }
+}
