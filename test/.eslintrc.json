@@ -1,14 +1,19 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true,
-        "node": true,
-        "mocha": true
-    },
-    "extends": ["plugin:react/recommended", "airbnb", "plugin:mocha/recommended", "prettier"],
-    "plugins": ["react","mocha"],
-    "rules":{
-        "prefer-arrow-callback":0,
-        "func-names":0
-    }
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "mocha": true
+  },
+  "extends": [
+    "plugin:react/recommended",
+    "airbnb",
+    "plugin:mocha/recommended",
+    "prettier"
+  ],
+  "plugins": ["react", "mocha"],
+  "rules": {
+    "prefer-arrow-callback": 0,
+    "func-names": 0
+  }
 }

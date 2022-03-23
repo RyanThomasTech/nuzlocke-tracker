@@ -27,7 +27,7 @@ Furthermore, I should remove the error-handling functions from `app.js`, as thei
 
 This is a decent base-state for the app, so now is a good time to git init.
 
-## Convert to ES6
+## Convert to ES6 + code quality
 
 1. Rename `www` to `www.js`.
 2. Change all instances of `var foo = require('bar');` to `import foo from 'bar';` across `www.js, app.js,routes/*`.
@@ -54,7 +54,7 @@ Now you must create a babel config file named `.babelrc` (or `babel.config.json`
 ```
 {
     "presets":["@babel/preset-env"],
-    "plugins":["@babel/plugin-transform-runtime"]
+    "plugins":["@babel/plugin-transform-runtime", "istanbul"]
 }
 ```
 
@@ -195,6 +195,57 @@ describe('Index page test', function() {
 });
 ```
 
+If I want to configure nyc beyond using default functionality at a later time, I will have to start (at this point)[https://github.com/istanbuljs/nyc#configuring-nyc].
+
 And in `package.json` we add the `test` script: `"test": "nyc --reporter=html --reporter=text --reporter=lcov mocha -r @babel/register`
 
 - Notice that we are calling `nyc`(istanbul? not sure what's up with the name) and telling it to provide reports in html, `lcov.info`, and on the console via text, and using it to run `mocha` which (-r)equires `@babel/register` to compile in a babel project.
+
+## Integrating PostgreSQL
+
+I'll be working with the PostgresQL installation present on my dev machine.
+
+```
+npm install pg-promise pg-monitor dotenv
+mkdir src/db
+touch .env src/db/database.js
+out=$(echo .env; cat .gitignore)
+echo "$out" > .gitignore
+```
+
+- Note that these are being installed as normal dependencies, not dev-dependencies.
+- `pg-promise` When I started looking into ExpressJS, the official docs pointed me at (pg-promise)[https://github.com/vitaly-t/pg-promise], so that's what I'll continue using for now.
+- `pg-monitor` Very useful tool that outputs the DB calls made by the app to the console while it's running. This feels like it should be a dev-dependency, but until i can figure out how to import it in development-only code, I'm treating it as a full dependency.
+- `dotenv` Will allow me to assign environment variables for the application that live in a specified `.env` file. This allows me to hide certain information from the git repo.
+- The `out='echo...` adds `.env` to the top of the `.gitignore`.
+
+Per `pg-promise`(henceforth pgp)'s docs, I will create a single database object and export it for use across the app. It handles pools internally. First, I'll create a `settings.js` file in `src/`...
+
+```
+import 'dotenv/config';
+
+//object destructuring is cool!
+export const {DB_USER, DB_PASSWORD, DB_PORT}=process.env;
+```
+
+Afterwards, in `src/db/database.js`...
+
+```
+import pgp from 'pg-promise';
+import monitor from 'pg-monitor';
+import { DB_USER, DB_PASS, DB_PORT } from '../settings';
+
+const conn = `postgres://${DB_USER}:${DB_PASS}@host:${DB_PORT}/postgres`;
+const db = pgp(conn);
+monitor.attach(pgp);
+
+
+export default db;
+```
+
+Now,
+
+```
+mkdir src/controllers
+touch src/controllers/home.js src/controllers/index.js
+```
