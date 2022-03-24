@@ -1,7 +1,4 @@
-.env
 build
-coverage
-.nyc_output
 
 # Created by https://www.toptal.com/developers/gitignore/api/node
 # Edit at https://www.toptal.com/developers/gitignore?templates=node

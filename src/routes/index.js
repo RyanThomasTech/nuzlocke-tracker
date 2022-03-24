@@ -1,9 +1,10 @@
 import express from "express";
-import { IndexPage } from "../controllers";
+import { indexPage, trainersPage } from "../controllers";
 
 const router = express.Router();
 
 /* GET home page. */
-router.get("/", IndexPage);
+router.get("/", indexPage);
+router.get("/trainers", trainersPage);
 
 export default router;
