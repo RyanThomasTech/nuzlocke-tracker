@@ -219,7 +219,7 @@ echo "$out" > .gitignore
 - `dotenv` Will allow me to assign environment variables for the application that live in a specified `.env` file. This allows me to hide certain information from the git repo.
 - The `out='echo...` adds `.env` to the top of the `.gitignore`.
 
-Per `pg-promise`(henceforth pgp)'s docs, I will create a single database object and export it for use across the app. It handles pools internally. First, I'll create a `settings.js` file in `src/`...
+Per `pg-promise`(henceforth pgp)'s docs, I will create a single database object and export it for use across the app. It handles pools internally. First, I'll create a `settings.js` file in `src/` and utilize object destructuring to assign the appropriate `process.env` keys to their respective in-app lookalikes...
 
 ```
 import 'dotenv/config';
@@ -228,24 +228,110 @@ import 'dotenv/config';
 export const {DB_USER, DB_PASSWORD, DB_PORT}=process.env;
 ```
 
-Afterwards, in `src/db/database.js`...
+Afterwards, in `src/db/database.js`, per the `pgp` Docs, we create a single database objecdt and let it handle its pools on its own. We will also `monitor.attach(/*initOptions*/)` to it while we're here. We will `export default db` so that the rest of the program can call it...
 
 ```
-import pgp from 'pg-promise';
-import monitor from 'pg-monitor';
-import { DB_USER, DB_PASS, DB_PORT } from '../settings';
+import pgpromise from "pg-promise";
+import monitor from "pg-monitor";
+import { DB_USER, DB_PASSWORD, DB_PORT } from "../settings";
 
-const conn = `postgres://${DB_USER}:${DB_PASS}@host:${DB_PORT}/postgres`;
+const initOptions = {
+  /** pgp and pgm need to have options passed to them, even if blank, otherwise they throw errors */
+};
+const pgp = pgpromise(initOptions);
+const conn = `postgres://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/nuzlocke`;
 const db = pgp(conn);
-monitor.attach(pgp);
-
+monitor.attach(initOptions);
 
 export default db;
-```
-
-Now,
 
 ```
-mkdir src/controllers
-touch src/controllers/home.js src/controllers/index.js
+
+With this, the PostgresQL database is now connected to the app. Groovy!
+
+# MVC structure
+
+It's worth noting that our routes are essentially acting as our "view" in this app.
+
 ```
+mkdir src/controllers src/models
+touch src/controllers/home.js src/controllers/index.js src/controllers/trainers.js src/models/model.js
+```
+
+Ideally, I'd like to be able to import the entirety of the `controllers/` directory into the `routes/index.js` file to simplify the import process, but that's not possible. There's a convenient work around, though. First, I'll create `controllers/home.js`
+
+```
+const indexPage = (req, res) =>
+  res.status(200).json({ message: "Welcome to the Nuzlocke tracker!" });
+
+export default indexPage;
+
+```
+
+And in `controllers/index.js`, I will implement the "index re-export" pattern by exporting the default exports of other files as named exports from this file!
+
+```
+// a fancy pattern for simplifying my router import that I found at https://sunnysingh.io/blog/javascript-import-from-folder
+export { default as indexPage } from "./home";
+export { default as trainersPage } from "./trainers";
+
+```
+
+That allows me to simplify my import in `routes/index.js` to `import { indexPage, trainersPage } from "../controllers";`
+
+Now, we have to develop a model that the app (or at least the trainers page, for now) will be using! A Model in this context is the specification for the SQL queries that we will be triggering from within the app, and how the data will be received from the server. For example, we may simply want to make a basic `SELECT * FROM [table]` query, and we decide that will return an `Array` filled with multiple JSON `Objects` (not that there are many other ways one could think to return data from a `SELECT *` query... other examples may give more freedom for choice). First, we declare a class Model and give it a constructor which takes the table name from the file that calls it. Then, we will give it a number of async functions which will return `pgp` calls as appropriate. (The docs will come in handy here)[https://github.com/vitaly-t/pg-promise].
+
+```
+import db from "../db/database";
+
+class Model {
+  constructor(table) {
+    this.table = table;
+  }
+
+  async selectAll() {
+    const { table } = this;
+    return db.any("SELECT * FROM $1:name", table);
+  }
+}
+
+export default Model;
+
+```
+
+Now, with our model in place we can create the controller which is called by our route. We create an instance of our Model with "trainers" as the targeted table, and we create an async function which `try/catch`'s our model functions. `pgp` returns Promises, so it's important that we use a `try/catch` schema for interacting with our model.
+
+```
+import Model from "../models/model";
+
+const trainersModel = new Model("trainers");
+const trainersPage = async (req, res) => {
+  try {
+    const data = await trainersModel.selectAll();
+    res.status(200).json({ trainers: data });
+  } catch (err) {
+    res.status(200).json({ trainers: err.stack });
+  }
+};
+
+export default trainersPage;
+```
+
+Finally, we can update our `routes/index.js` file to call the `trainersPage` controller that we so easily imported before.
+
+```
+import express from "express";
+import { indexPage, trainersPage } from "../controllers";
+
+const router = express.Router();
+
+/* GET home page. */
+router.get("/", indexPage);
+router.get("/trainers", trainersPage);
+
+export default router;
+
+router.get("/trainers", trainersPage);
+```
+
+TODO: I've gotten ahead of myself in the actual coding, and I should test whether what I wrote here is all that's necessary to get this all started, or if there's more that I've done and forgotten about since writing this.
