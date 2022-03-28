@@ -23,17 +23,17 @@ export const createTrainer = async (req, res) => {
 
 export const readTrainer = async (req, res) => {
   try {
-    const payload = { id: req.body.id };
+    const payload = { id: req.params.id };
     const data = await trainersModel.selectRow(payload);
     res.status(200).json({ trainers: data });
   } catch (err) {
-    res.status(200).json({ trainers: err.stack });
+    res.status(404).json({ trainers: err.stack });
   }
 };
 
 export const deleteTrainer = async (req, res) => {
   try {
-    const payload = { id: req.body.id };
+    const payload = { id: req.params.id };
     const data = await trainersModel.deleteReturnRow(payload);
     res.status(200).json({ trainers: data });
   } catch (err) {
