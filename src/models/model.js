@@ -12,16 +12,19 @@ class Model {
 
   async selectRow(obj) {
     const { table } = this;
-    return db.one(`
+    return db.one(
+      `
         SELECT * FROM $1:name
         WHERE ($2:name = $2:csv)
-        `,[table, obj]
+        `,
+      [table, obj]
     );
   }
 
   async insertReturnRow(obj) {
     const { table } = this;
-    return db.one(`
+    return db.one(
+      `
             INSERT INTO $1:name($2:name)
             VALUES ($2:csv)
             RETURNING *
@@ -32,7 +35,8 @@ class Model {
 
   async deleteReturnRow(obj) {
     const { table } = this;
-    return db.one(`
+    return db.one(
+      `
         DELETE FROM $1:name
         WHERE ($2:name=$2:csv)
         RETURNING *

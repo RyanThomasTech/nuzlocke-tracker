@@ -1,6 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
+import fs from "fs";
 import db from "../db/database";
+import pokeList from "./pokemonList";
 
+const MAX_POKEMON = 898;
 const createPokemonTable = `
     DROP TABLE IF EXISTS pokemon;
     CREATE TABLE IF NOT EXISTS pokemon(
@@ -22,20 +25,46 @@ const fetchPokemon = async () => {
         .then(data => {
             data.map((el) => (el.name))
         }); */
-const fetchPokemon = async() => {
+const fetchPokemon = async () => {
+  // attempt to get an updated list of 'mon from pokeapi in case of game updates,
+  // otherwise the list that ships with the app will suffice
+  try {
     db.none(createPokemonTable);
-    try {
-        const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=898');
-        const pokemon = response.data.results.map((el) => (el.name));
-        db.none(`
+    const response = await axios.get(
+      `https://pokeapi.co/api/v2/pokemon?limit=${MAX_POKEMON}`
+    );
+    const pokemon = response.data.results.map((el) => el.name);
+    fs.writeFile(
+      "/home/ryan/express/nuzlocke-tracker/src/utils/pokemonList.js",
+      `
+        const pokeList = [${pokemon.map((el) => `'${el}'`)}]
+
+        export default pokeList;
+        `,
+      (err) => {
+        console.error(err);
+      }
+    );
+    db.none(
+      `
             INSERT INTO pokemon(name)
             SELECT unnest($1)
-            `,[pokemon])
-    } catch (err) {
-        console.error(err);
-    }
+            `,
+      [pokemon]
+    );
+  } catch (err) {
+    console.error(err);
+    const pokemon = pokeList;
+    db.none(
+      `
+            INSERT INTO pokemon(name)
+            SELECT unnest($1)
+            `,
+      [pokemon]
+    );
+  }
 };
 
 (async () => {
-    await fetchPokemon();
+  await fetchPokemon();
 })();
