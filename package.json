@@ -10,9 +10,11 @@
     "pretty": "prettier --write .",
     "postpretty": "npm run lint --fix",
     "test": "nyc --reporter=html --reporter=text --reporter=lcov mocha -r @babel/register -r test/hooks.js",
-    "runQuery": "babel-node ./src/utils/runQuery.js"
+    "runQuery": "babel-node ./src/utils/runQuery.js",
+    "fetchPokemon": "babel-node ./src/utils/populatePokemon.js"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.0.0",
