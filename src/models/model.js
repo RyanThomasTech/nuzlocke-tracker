@@ -1,4 +1,9 @@
+// import pgpromise from "pg-promise";
 import db from "../db/database";
+
+/*const pgp = pgpromise({
+    capSQL: true
+})*/
 
 class Model {
   constructor(table) {
@@ -45,19 +50,13 @@ class Model {
     );
   }
 
-  async updateReturnRow(obj) {
-    const { id, name } = obj;
-    const data = { name };
+  async updateTrainerReturnRow(obj) {
+    const data = obj;
     const { table } = this;
-    return db.one(
-      `
-        UPDATE $1~
-        SET $2~ = $2:csv
-        WHERE (id = $3)
-        RETURNING *
-      `,
-      [table, data, id]
-    );
+   // const condition = pgp.as.format("WHERE id = $/id/", data);
+    /* eslint-disable no-unused-expressions */
+    //pgp.helpers.insert(data,["name"],table) + condition;
+    /* eslint-enable no-unused-expressions */
   }
 }
 

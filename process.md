@@ -249,7 +249,7 @@ export default db;
 
 With this, the PostgresQL database is now connected to the app. Groovy!
 
-# MVC structure
+## MVC structure
 
 It's worth noting that our routes are essentially acting as our "view" in this app.
 
@@ -300,7 +300,6 @@ export default Model;
 ```
 
 Now, with our model in place we can create the controller which is called by our route. We create an instance of our Model with "trainers" as the targeted table, and we create an async function which `try/catch`'s our model functions. `pgp` returns Promises, so it's important that we use a `try/catch` schema for interacting with our model.
-
 ```
 import Model from "../models/model";
 
@@ -316,7 +315,6 @@ const trainersPage = async (req, res) => {
 
 export default trainersPage;
 ```
-
 Finally, we can update our `routes/index.js` file to call the `trainersPage` controller that we so easily imported before.
 
 ```
@@ -335,3 +333,37 @@ router.get("/trainers", trainersPage);
 ```
 
 TODO: I've gotten ahead of myself in the actual coding, and I should test whether what I wrote here is all that's necessary to get this all started, or if there's more that I've done and forgotten about since writing this.
+
+## Testing 2: Electric Boogaloo
+
+Per (Mocha Docs)[https://mochajs.org/#root-hook-plugins] we can define some root hooks that will be called before the entire testing suite--this allows us to create a DB for running tests on. Create `test/hooks.js` and add...
+```
+/**
+ * According to mocha docs, we need to export our hooks as a named export,
+ * so for this file I'm disabling eslint's prefer-default-export
+ */
+/* eslint-disable import/prefer-default-export */
+import {
+    dropTables,
+    createTables,
+    insertIntoTables
+} from '../src/utils/queryFunctions';
+
+export const mochaHooks = {
+
+    beforeAll: [
+        async function() {
+            await createTables();
+            await insertIntoTables();
+        }
+    ],
+
+    afterAll: [
+        async function() {
+            await dropTables();
+        }
+    ]
+};
+```
+
+Now we can add test/hooks.js as a required file for our test script in `package.json`: `"test": "nyc --reporter=html --reporter=text --reporter=lcov mocha -r @babel/register -r test/hooks.js"`

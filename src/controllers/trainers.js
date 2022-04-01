@@ -45,7 +45,7 @@ export const updateTrainer = async (req, res) => {
   try {
     const { id, name } = req.body;
     const payload = { id, name };
-    const data = await trainersModel.updateReturnRow(payload);
+    const data = await trainersModel.updateTrainerReturnRow(payload);
     res.status(200).json({ trainers: data });
   } catch (err) {
     try {
