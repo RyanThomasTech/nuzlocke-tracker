@@ -300,6 +300,7 @@ export default Model;
 ```
 
 Now, with our model in place we can create the controller which is called by our route. We create an instance of our Model with "trainers" as the targeted table, and we create an async function which `try/catch`'s our model functions. `pgp` returns Promises, so it's important that we use a `try/catch` schema for interacting with our model.
+
 ```
 import Model from "../models/model";
 
@@ -315,6 +316,7 @@ const trainersPage = async (req, res) => {
 
 export default trainersPage;
 ```
+
 Finally, we can update our `routes/index.js` file to call the `trainersPage` controller that we so easily imported before.
 
 ```
@@ -337,6 +339,7 @@ TODO: I've gotten ahead of myself in the actual coding, and I should test whethe
 ## Testing 2: Electric Boogaloo
 
 Per (Mocha Docs)[https://mochajs.org/#root-hook-plugins] we can define some root hooks that will be called before the entire testing suite--this allows us to create a DB for running tests on. Create `test/hooks.js` and add...
+
 ```
 /**
  * According to mocha docs, we need to export our hooks as a named export,

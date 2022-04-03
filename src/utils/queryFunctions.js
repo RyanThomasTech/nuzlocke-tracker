@@ -10,24 +10,24 @@ import {
 } from "./queries";
 
 /*
-    this is a very clever execution of multiple queries that I stole from
-    https://www.smashingmagazine.com/2020/04/express-api-backend-project-postgresql/
-    and keep re-using. Note that this pattern is very production-unsafe due to
-    waiitng to resolve the promise for the query to execute in a loop.
+  I am certain I'll look back on this code in a few years and wince.
+  Async + callback hell just so that I can load arrays with
+  queries and execute them in a reliably synchronous manner.
 */
-export const executeQueryArray = (arr) => {
-  db.tx('setup', async (t) => {
-    arr.forEach(async (ele) => {
-      await t.none(ele);
+export const executeQueryArray = async (arr) => {
+  await db
+    .tx(`executeQueryArray`, async (t) => {
+      arr.forEach((ele) => {
+        t.none(ele);
+      });
+    })
+    .then(() => {
+      // success
+    })
+    .catch((err) => {
+      console.error(err);
     });
-  })
-  .then(()=> {
-    // success
-  })
-  .catch(err => {
-    console.error(err);
-  })
-}
+};
 
 export const dropTables = () =>
   executeQueryArray([dropTrainersTable, dropCapturedPokemonTable]);
@@ -35,7 +35,7 @@ export const createTables = () =>
   executeQueryArray([
     createTrainersTable,
     createCapturedPokemonTable,
-    createCapturedPokemonView
+    createCapturedPokemonView,
   ]);
 export const insertIntoTables = () =>
   executeQueryArray([insertTrainers, insertCapturedPokemon]);

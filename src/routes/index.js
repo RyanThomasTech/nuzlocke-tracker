@@ -8,6 +8,9 @@ import {
   readTrainer,
   capdPage,
   readCapdPokemon,
+  updateCapdPokemon,
+  createCapdPokemon,
+  deleteCapdPokemon,
 } from "../controllers";
 
 const router = express.Router();
@@ -21,5 +24,8 @@ router.delete("/trainers/:id", deleteTrainer);
 router.put("/trainers", updateTrainer);
 router.get("/captured-pokemon", capdPage);
 router.get("/captured-pokemon/:id", readCapdPokemon);
+router.put("/captured-pokemon/:id", updateCapdPokemon);
+router.post("/captured-pokemon", createCapdPokemon);
+router.delete("/captured-pokemon/:id", deleteCapdPokemon);
 
 export default router;

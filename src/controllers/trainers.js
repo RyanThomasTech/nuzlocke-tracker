@@ -36,6 +36,7 @@ export const deleteTrainer = async (req, res) => {
     const payload = { id: req.params.id };
     const data = await trainersModel.deleteReturnRow(payload);
     res.status(200).json({ trainers: data });
+    console.log(data);
   } catch (err) {
     res.status(404).json({ trainers: err.stack });
   }
@@ -47,13 +48,14 @@ export const updateTrainer = async (req, res) => {
     const payload = { id, name };
     const data = await trainersModel.updateTrainerReturnRow(payload);
     res.status(200).json({ trainers: data });
+    console.log(data);
   } catch (err) {
     try {
       const payload = { name: req.body.name };
       const data = await trainersModel.insertReturnRow(payload);
       res.status(201).json({ trainers: data });
     } catch (err2) {
-      res.status(200).json({ trainers: err2.stack });
+      res.status(404).json({ trainers: err2.stack });
     }
   }
 };
