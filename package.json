@@ -11,11 +11,13 @@
     "postpretty": "npm run lint --fix",
     "test": "nyc --reporter=html --reporter=text --reporter=lcov mocha -r @babel/register -r test/hooks.js",
     "runQuery": "babel-node ./src/utils/runQuery.js",
-    "fetchPokemon": "babel-node ./src/utils/populatePokemon.js"
+    "fetchPokemon": "babel-node ./src/utils/populatePokemon.js",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
     "axios": "^0.26.1",
     "cookie-parser": "~1.4.4",
+    "coveralls": "^3.1.1",
     "debug": "~2.6.9",
     "dotenv": "^16.0.0",
     "express": "~4.16.1",
