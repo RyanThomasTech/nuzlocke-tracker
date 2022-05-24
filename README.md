@@ -4,4 +4,4 @@ An Express backend for a Pokemon Nuzlocke tracking app I'm working on. Focusing 
 
 I wrote up my setup process in `process.md`.
 
-This is a WIP, still under development as of writing this. 
+This is a WIP, still under development as of writing this.

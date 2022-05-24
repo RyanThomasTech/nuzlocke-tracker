@@ -2,11 +2,17 @@ import db from "../db/database";
 import {
   insertTrainers,
   insertCapturedPokemon,
+  insertGames,
+  insertGamesTrainers,
   dropTrainersTable,
   dropCapturedPokemonTable,
+  dropGamesTable,
+  dropGamesTrainersTable,
   createTrainersTable,
   createCapturedPokemonTable,
   createCapturedPokemonView,
+  createGamesTable,
+  createGamesTrainersTable,
 } from "./queries";
 
 /*
@@ -30,12 +36,24 @@ export const executeQueryArray = async (arr) => {
 };
 
 export const dropTables = () =>
-  executeQueryArray([dropTrainersTable, dropCapturedPokemonTable]);
+  executeQueryArray([
+    dropTrainersTable,
+    dropGamesTable,
+    dropGamesTrainersTable,
+    dropCapturedPokemonTable,
+  ]);
 export const createTables = () =>
   executeQueryArray([
     createTrainersTable,
+    createGamesTable,
+    createGamesTrainersTable,
     createCapturedPokemonTable,
     createCapturedPokemonView,
   ]);
 export const insertIntoTables = () =>
-  executeQueryArray([insertTrainers, insertCapturedPokemon]);
+  executeQueryArray([
+    insertTrainers,
+    insertGames,
+    insertGamesTrainers,
+    insertCapturedPokemon,
+  ]);

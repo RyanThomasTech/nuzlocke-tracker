@@ -3,3 +3,4 @@
 export { default as indexPage } from "./home";
 export * from "./trainers";
 export * from "./captured-pokemon";
+export * from "./games";

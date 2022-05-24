@@ -5,10 +5,6 @@ const pgp = pgpromise({
   capSQL: true,
 });
 
-const csId = new pgp.helpers.Column(
-  "?id" // ? before indicates cnd=true
-);
-
 const csCapdPokemon = new pgp.helpers.ColumnSet([
   { name: "nickname", skip: (c) => !c.exists },
   { name: "is_alive", skip: (c) => !c.exists },
@@ -37,6 +33,19 @@ class Model {
         WHERE ($2:name = $2:csv)
         `,
       [table, obj]
+    );
+  }
+
+  async countMatchingIds(arr) {
+    const { table } = this;
+    return db.one(
+      `
+        SELECT COUNT(*)
+        FROM $1~
+        WHERE id
+        IN ($2:csv)
+      `,
+      [table, arr]
     );
   }
 
@@ -81,6 +90,13 @@ class Model {
     const { table } = this;
     const condition = pgp.as.format(` WHERE id = $/id/ RETURNING *`, data);
     return db.one(pgp.helpers.update(data, csCapdPokemon, table) + condition);
+  }
+
+  async updateGamesReturnRow(obj) {
+    const data = obj;
+    const { table } = this;
+    const condition = pgp.as.format(` WHERE id = $/id/ RETURNING *`, data);
+    return db.one(pgp.helpers.update(data, ["name"], table) + condition);
   }
 }
 
