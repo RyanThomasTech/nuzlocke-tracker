@@ -1,10 +1,11 @@
 import Model from "../models/model";
 
-const capdModel = new Model("captured_pokemon");
+const capdCommandModel = new Model("captured_pokemon");
+const capdQueryModel = new Model("captured_pokemon_v");
 
 export const capdPage = async (req, res) => {
   try {
-    const data = await capdModel.selectAll();
+    const data = await capdQueryModel.selectAll();
     res.status(200).json({ captured_pokemon: data });
   } catch (err) {
     res.status(404).json({ captured_pokemon: err.stack });
@@ -14,7 +15,7 @@ export const capdPage = async (req, res) => {
 export const readCapdPokemon = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await capdModel.selectRow({ id });
+    const data = await capdQueryModel.selectRow({ id });
     res.status(200).json({ captured_pokemon: data });
   } catch (err) {
     res.status(404).json({ captured_pokemon: err.stack });
@@ -30,7 +31,7 @@ export const updateCapdPokemon = async (req, res) => {
       );
     }
     const payload = req.body;
-    const data = await capdModel.updateCapdPokemonReturnRow(payload);
+    const data = await capdCommandModel.updateCapdPokemonReturnRow(payload);
     res.status(201).json({ captured_pokemon: data });
   } catch (err) {
     res.status(501).json({ captured_pokemon: err.stack });
@@ -40,7 +41,7 @@ export const updateCapdPokemon = async (req, res) => {
 export const createCapdPokemon = async (req, res) => {
   try {
     const payload = req.body;
-    const data = await capdModel.insertReturnRow(payload);
+    const data = await capdCommandModel.insertReturnRow(payload);
     res.status(200).json({ captured_pokemon: data });
   } catch (err) {
     res.status(400).json({ captured_pokemon: err.stack });
@@ -51,7 +52,7 @@ export const deleteCapdPokemon = async (req, res) => {
   try {
     const { id } = req.params;
     const payload = { id };
-    const data = await capdModel.deleteReturnRow(payload);
+    const data = await capdCommandModel.deleteReturnRow(payload);
     res.status(200).json({ captured_pokemon: data });
   } catch (err) {
     res.status(404).json({ captured_pokemon: err.stack });

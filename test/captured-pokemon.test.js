@@ -17,9 +17,10 @@ describe("Captured Pokemon page", function () {
               "id",
               "nickname",
               "is_alive",
-              "owner_id",
               "species_id",
               "game_id",
+              "trainer_id",
+              "trainer"
             ]);
           });
           done();
@@ -40,9 +41,10 @@ describe("Captured Pokemon page", function () {
                   "id",
                   "nickname",
                   "is_alive",
-                  "owner_id",
                   "species_id",
                   "game_id",
+                  "trainer_id",
+                  "trainer"
                 ]);
                 expect(res.body.captured_pokemon.id).to.equal(id);
               }
@@ -76,9 +78,8 @@ describe("Captured Pokemon page", function () {
                   "id",
                   "nickname",
                   "is_alive",
-                  "owner_id",
                   "species_id",
-                  "game_id",
+                  "game_trainer_id",
                 ]);
                 expect(res.body.captured_pokemon.nickname).to.equal(
                   "ChloroPhil"
@@ -94,7 +95,7 @@ describe("Captured Pokemon page", function () {
         updateCapturedMon({ id: 2, is_alive: true }, 201)
       );
       it(
-        "Reports 501 when fed an invalid id",
+        "Reports 501 when fed an invalid id--creation via put not implemented",
         updateCapturedMon({ id: 10, is_alive: false }, 501)
       );
     });
@@ -116,9 +117,8 @@ describe("Captured Pokemon page", function () {
                   "id",
                   "nickname",
                   "is_alive",
-                  "owner_id",
                   "species_id",
-                  "game_id",
+                  "game_trainer_id"
                 ]);
               }
               done();
@@ -126,14 +126,13 @@ describe("Captured Pokemon page", function () {
         };
 
       it(
-        "creates a new cap'd pokemon",
+        "200: creates a new cap'd pokemon",
         createCapdPokemon(
           {
             nickname: "Purifier",
             is_alive: true,
             species_id: 662,
-            owner_id: 1,
-            game_id: 1,
+            game_trainer_id: 1,
           },
           200
         )

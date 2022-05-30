@@ -9,8 +9,7 @@ const csCapdPokemon = new pgp.helpers.ColumnSet([
   { name: "nickname", skip: (c) => !c.exists },
   { name: "is_alive", skip: (c) => !c.exists },
   { name: "species_id", skip: (c) => !c.exists },
-  { name: "owner_id", skip: (c) => !c.exists },
-  { name: "game_id", skip: (c) => !c.exists },
+  { name: "game_trainer_id", skip: (c) => !c.exists }
 ]);
 
 const csTrainers = new pgp.helpers.ColumnSet(["name"]);
